@@ -23,3 +23,6 @@ For example, 2024 is leap year and there is a 13 leap years before 2024 since 19
 I tested and saw tht 31-13= 18 and at the date 18/12/2024, it repeated 18/12/2024 and
 ignored 31/12/2024. jumped 01/01/2025 from 30/12/2024
 tihs code solves this problem.
+
+Author: Semih Ozkan semihozkan555@gmail.com  
+Date: October 1, 2020
