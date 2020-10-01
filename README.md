@@ -5,8 +5,10 @@ No additional library is required.
 
 I will explain tricky part here.
 
-if ( leap(D_T.year)){
+if( leap(D_T.year)){
+
 	if ( (day_of_year+leap_years) >365 ) {
+	
 		day_of_year++;
 	}
 }
