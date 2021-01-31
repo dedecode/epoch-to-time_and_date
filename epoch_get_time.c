@@ -21,44 +21,64 @@ int leap(int y) // function for check the year leap or not
  int leap_years;
  int day_of_year;
  
-void get_time(unsigned long secs){  // function starts  here
-                                  
- D_T.second = secs % 60;             // gets second, minute 
- D_T.minute = (secs /60)%60;        // and hour info.
- D_T.hour = (secs % 86400)/3600;
- 
- int days_since_epoch= secs/ (24*60*60); // number of days completed since 01/01/1970 00:00:00
- D_T.year =1970 + days_since_epoch / 365;
+void ts_to_datetime(unsigned long secs, DateTime *datetime){
+	int num_of_leap=0;
+	datetime->second = secs % 60;
+	datetime->minute = (secs /60)%60;
+	datetime->hour = (secs % 86400)/3600;
+	
+	int temp_x;
+	long sec_in_year=365*24*60*60;
+	int day_of_year;
+	
+	datetime->year =1970 + secs / sec_in_year;
 
-int i;
-leap_years=0;
+	int passed_years = datetime->year-1900;
+	day_of_year = (secs % (31536000)) / 86400 -((passed_years-69)/4) + ((passed_years-1)/100) - ((passed_years+299)/400)+1;
 
-for( i=1970;i<D_T.year;i++){  // calculates # of leap years 
-	if( leap(i))               // we need it for determine #of leap seconds
-	leap_years++;
-}
- 	D_T.year =1970 + ( days_since_epoch - leap_years)/ 365;  // year info updated 
-  day_of_year = (days_since_epoch - leap_years)%365 + 1 ;   // according to # of leap years
-
-// this is very important tricky point. Read readme.
-if ( leap(D_T.year)){
-	if ( (day_of_year+leap_years) >365 ) {
-		day_of_year++;
+	uint8_t val = (datetime->year % 4 == 0 && datetime->year % 100 != 0) || (datetime->year % 400 == 0);
+	int mo[12] = {31, 28 + val, 31,30,31,30,31,31,30,31,30,31};
+	int	 i=0;
+	temp_x=0;
+	int kk=1970;
+	while(kk<datetime->year){
+		num_of_leap +=  (kk % 4 == 0 && kk % 100 != 0) || (kk % 400 == 0);
+		kk++;
 	}
-}
-	int mo[12] = {31,28+leap(D_T.year),31,30,31,30,31,31,30,31,30,31};
- 	i=0;
-  int temp_x=0;
-  
-    while(i<12){
-	    	temp_x += mo[i]; 
-	      if(day_of_year <=temp_x)
-          break;
-	      i++;
-    }
-  D_T.day = day_of_year -temp_x + mo[i];
-	D_T.month = i+1;
-	int k;
+	
+	while(i<12){
+		temp_x += mo[i]; 
+		if(day_of_year <temp_x)
+			break;
+		i++;
+	}
+	if( (temp_x+ num_of_leap)>366){
+	}
+
+			datetime->month = i+1;
+
+int tt= day_of_year -temp_x + mo[i];
+		if( tt < 0){
+			tt += 31;	
+			datetime->month =12;
+			datetime->year -=1;
+	
+		}
+		datetime->day = tt;
+
+		if(datetime->day ==0){
+			
+			datetime->day =mo[i-1];
+			datetime->month =i;
+			
+			if ( datetime->month == 0){
+			
+				datetime->day =31;
+				datetime->year -=1;
+				datetime->month =12;
+			} 
+
+		}
 }
 
 int main(){
@@ -69,7 +89,7 @@ int main(){
 
 	int k;
 	for (k=0;k<8000;k++){
-		get_time(epoch);
+		ts_to_datetime(epoch, &D_T);
 	  printf ("leaps: %2d, days:%3d, lol %4d. %d->  %2d-%2d-%4d   %2d:%2d:%2d   \n",leap_years,day_of_year,k,epoch, D_T.day,D_T.month, D_T.year,D_T.hour,D_T.minute,D_T.second );
     epoch += 86400;
 	}
