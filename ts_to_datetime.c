@@ -1,3 +1,12 @@
+typdef struct DataTime{     // struct. members are date 
+    uint16_t year;   // time infos.
+    uint8_t month;
+    uint8_t day;
+    uint8_t hour;
+    uint8_t minute;
+    uint8_t second;
+}DataTime;
+
 int ts_to_datetime(unsigned long secs, DateTime *datetime){
 	int num_of_leap=0;
 	datetime->second = secs % 60;
